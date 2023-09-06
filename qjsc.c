@@ -27,10 +27,12 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
-#include <unistd.h>
 #include <errno.h>
-#if !defined(_WIN32)
+#if defined(_WIN32)
+#include "getopt.h"
+#else
 #include <sys/wait.h>
+#include <unistd.h>
 #endif
 
 #include "cutils.h"
@@ -190,9 +192,9 @@ static void output_object_code(JSContext *ctx,
 
     namelist_add(&cname_list, c_name, NULL, load_only);
     
-    fprintf(fo, "const uint32_t %s_size = %u;\n\n", 
+    fprintf(fo, "extern const uint32_t %s_size = %u;\n\n", 
             c_name, (unsigned int)out_buf_len);
-    fprintf(fo, "const uint8_t %s[%u] = {\n",
+    fprintf(fo, "extern const uint8_t %s[%u] = {\n",
             c_name, (unsigned int)out_buf_len);
     dump_hex(fo, out_buf, out_buf_len);
     fprintf(fo, "};\n\n");
