@@ -27,6 +27,10 @@ target_compile_definitions(${PROJECT_NAME}
         CONFIG_VERSION="${BUILD_VERSION}"
         )
 
+IF (UNIX) 
+TARGET_LINK_LIBRARIES(quickjs PUBLIC m) 
+ENDIF (UNIX) 
+
 set(QJSC_SOURCES ${SOURCES_ROOT}/qjsc.c)
 
 IF (WIN32)
