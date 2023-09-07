@@ -182,8 +182,7 @@ int nt_ftw(const WCHAR* path, int (*fn)(const char*, const struct stat* ptr, int
     }
 
     while (1) {
-        hFind = FindNextFileW(hFind, &info);
-        if (hFind == INVALID_HANDLE_VALUE) {
+        if (!FindNextFileW(hFind, &info)) {
             break;
         }
 

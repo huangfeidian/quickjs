@@ -1782,6 +1782,7 @@ static JSValue js_os_remove(JSContext *ctx, JSValueConst this_val,
     if (!filename)
         return JS_EXCEPTION;
 #if defined(_WIN32)
+#define S_ISDIR(st_mode) (!(st_mode & S_IFDIR))
     {
         struct stat st;
         if (stat(filename, &st) == 0 && S_ISDIR(st.st_mode)) {
@@ -2436,7 +2437,7 @@ static JSValue js_os_readdir(JSContext* ctx, JSValueConst this_val,
     JSValue obj;
     int err = 0;
     uint32_t len = 0;
-    uint32_t str_size;
+    uint64_t str_size;
 
     path = JS_ToCStringLen(ctx, &str_size, argv[0]);
     if (!path)
@@ -2444,7 +2445,7 @@ static JSValue js_os_readdir(JSContext* ctx, JSValueConst this_val,
 
     if (str_size >= PATH_MAX) {
         JS_FreeCString(ctx, path);
-        return JS_ThrowInternalError("path too long: %u", str_size);
+        return JS_ThrowInternalError(ctx, "path too long: %llu", str_size);
     }
 
     uint32_t index;
@@ -2542,6 +2543,7 @@ static int64_t timespec_to_ms(const struct timespec *tv)
 {
     return (int64_t)tv->tv_sec * 1000 + (tv->tv_nsec / 1000000);
 }
+#endif
 
 /* return [obj, errcode] */
 static JSValue js_os_stat(JSContext *ctx, JSValueConst this_val,
@@ -2667,7 +2669,6 @@ static JSValue js_os_utimes(JSContext *ctx, JSValueConst this_val,
     JS_FreeCString(ctx, path);
     return JS_NewInt32(ctx, ret);
 }
-#endif
 
 /* sleep(delay_ms) */
 static JSValue js_os_sleep(JSContext *ctx, JSValueConst this_val,

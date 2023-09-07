@@ -12,13 +12,14 @@ set(SOURCES
         ${SOURCES_ROOT}/quickjs.c
         ${SOURCES_ROOT}/libregexp.c
         ${SOURCES_ROOT}/libunicode.c
-        ${SOURCES_ROOT}/libbf.c
         ${SOURCES_ROOT}/cutils.c
         ${SOURCES_ROOT}/quickjs-libc.c
         )
 
 IF (WIN32)
 list(APPEND SOURCES ${SOURCES_ROOT}/win_patch.c)
+ELSE()
+list(APPEND SOURCES ${SOURCES_ROOT}/libbf.c)
 ENDIF()
 
 add_library(quickjs STATIC ${SOURCES})
@@ -29,6 +30,7 @@ target_compile_definitions(${PROJECT_NAME}
 
 IF (UNIX) 
 TARGET_LINK_LIBRARIES(quickjs PUBLIC m) 
+target_compile_definitions(quickjs PRIVATE CONFIG_BIGNUM=1)
 ENDIF (UNIX) 
 
 set(QJSC_SOURCES ${SOURCES_ROOT}/qjsc.c)
